@@ -1,0 +1,73 @@
+<div class="col-4 m-auto mt-5">
+  <form [formGroup]="newUserForm" (submit)="register()" class="border p-4 rounded shadow">
+    <div class="mb-3">
+      <label for="exampleInputName" class="form-label">Full name <span class="text-danger">*</span></label>
+      <input type="text" formControlName="name" name="name" placeholder="Enter your full name" class="form-control"
+        id="exampleInputName" aria-describedby="nameHelp">
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputEmail" class="form-label">Email address <span class="text-danger">*</span></label>
+      <input type="email" formControlName="email" name="email" class="form-control"
+        placeholder="Enter your email address" id="exampleInputEmail" aria-describedby="emailHelp">
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPhone" class="form-label">Mobile Number <span class="text-danger">* </span>
+        <span class="text-gray">(+20)</span> </label>
+      <input type="email" formControlName="phone" name="phone" placeholder="Enter your mobile number with contry code"
+        class="form-control" id="exampleInputPhone" aria-describedby="emailHelp">
+    </div>
+
+    <div class="mb-3">
+      <label for="exampleInputAddress" class="form-label">Address <span class="text-danger">* </span> </label>
+      <input type="text" formControlName="address" name="address" placeholder="Enter comlete address"
+        class="form-control" id="exampleInputAddress" aria-describedby="addressHelp">
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPhoto" class="form-label">Photo <span class="text-danger">* </span> </label>
+      <input type="file" formControlName="photo" name="photo" placeholder="Upload your photo" class="form-control"
+        id="exampleInputPhoto" aria-describedby="photoHelp" (change)="onFileSelected($event)">
+      <label for=" photo" class="form-label">Upload Photo</label>
+    </div>
+    <div class="mb-3">
+      <label for="floatingSelect" class=" form-label">Select job</label>
+      <select class="form-select" name="jobId" formControlName="jobId" id="floatingSelect"
+        aria-label="Floating label select example">
+        @for(job of jobs;track job.id) {
+        <option [value]="job.id">{{job.title}}</option>
+        }@empty {
+        <option disabled>No jobs found</option>
+        }
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="floatingSelect " class="form-label">Select department</label>
+      <select class="form-select" name="departmentId" formControlName="departmentId" id="floatingSelect"
+        aria-label="Floating label select example">
+        @for(department of departments;track department.id) {
+        <option [value]="department.id">{{department.name}}</option>
+        }@empty {
+        <option disabled>No departments found</option>
+        }
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPassword1" class="form-label">Password <span class="text-danger">*</span></label>
+      <input type="password" formControlName="password" name="password" class="form-control" id="exampleInputPassword1">
+      <div id="emailHelp" class="form-text text-gray">We'll never share your email with anyone else.</div>
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputConfirmedPassword" class="form-label">Confirm Password <span
+          class="text-danger">*</span></label>
+      <input type="password" formControlName="confirmedPassword" name="confirmedPassword" class="form-control"
+        id="exampleInputConfirmedPassword">
+    </div>
+    <div class="mb-3">
+      <button type="submit" class="btn btn-primary m-auto ">Register</button>
+    </div>
+    <div class="mb-4">
+      <a type="button" class="text-secondary" (click)="navigateToLogin()"> If you have an account,
+        click to login directly
+      </a>
+    </div>
+  </form>
+</div>

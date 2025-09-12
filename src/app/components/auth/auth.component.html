@@ -1,0 +1,21 @@
+<div class="col-4 m-auto mt-5">
+  <form [formGroup]="loginUserForm" (submit)="login()" class="border p-4 rounded shadow">
+    <div class="mb-3">
+      <label for="exampleInputEmail" class="form-label">Email address <span class="text-danger">*</span></label>
+      <input type="email" formControlName="email" name="email" class="form-control"
+        placeholder="Enter your email address" id="exampleInputEmail" aria-describedby="emailHelp">
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPassword1" class="form-label">Password <span class="text-danger">*</span></label>
+      <input type="password" formControlName="password" name="password" class="form-control" id="exampleInputPassword1">
+    </div>
+    <div class="mb-3">
+      <button type="submit" class="btn btn-primary m-auto ">Login</button>
+    </div>
+    <div class="mb-4">
+      <a type="button" class="text-secondary" (click)="navigateToRegister()"> If you don't have an account,
+        click to register directly
+      </a>
+    </div>
+  </form>
+</div>
