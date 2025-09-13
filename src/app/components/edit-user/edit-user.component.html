@@ -1,4 +1,4 @@
-<div class="col-4 m-auto mt-5">
+<!-- <div class="col-4 m-auto mt-5">
   <form [formGroup]="editedUserForm" (submit)="updateUser()" class="border p-4 rounded shadow">
     <div class="mb-3">
       <label for="exampleInputName" class="form-label">Full name <span class="text-danger">*</span></label>
@@ -56,7 +56,71 @@
     </div>
     <div class="mb-3">
       <button type="submit" class="btn btn-primary m-auto">Update</button>
-      <button type="submit" class="btn btn-secondery" (click)="cancelUpdateUser()">Cancel</button>
+      <button type="submit" class="btn btn-secondery" (click)="closePopup()">Cancel</button>
     </div>
   </form>
+</div> -->
+
+
+<div class="modal-backdrop">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header d-flex justify-content-between align-items-center">
+      <h5 class="modal-title">Edit User</h5>
+      <button type="button" class="btn-close" (click)="closePopup()" aria-label="Close"></button>
+    </div>
+
+    <!-- Form Content -->
+    <form [formGroup]="editedUserForm" (ngSubmit)="updateUser()" class="p-3">
+      <div class="mb-3">
+        <label class="form-label">Full name <span class="text-danger">*</span></label>
+        <input type="text" formControlName="name" class="form-control" placeholder="Enter full name" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Email address <span class="text-danger">*</span></label>
+        <input type="email" formControlName="email" class="form-control" placeholder="Enter email address" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
+        <input type="text" formControlName="phone" class="form-control" placeholder="Enter phone number" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Address <span class="text-danger">*</span></label>
+        <input type="text" formControlName="address" class="form-control" placeholder="Enter address" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Birth Date <span class="text-danger">*</span></label>
+        <input type="date" formControlName="dateOfBirth" class="form-control" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Photo</label>
+        <input type="file" class="form-control" (change)="onFileSelected($event)" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Job</label>
+        <select class="form-select" formControlName="jobId">
+          <option *ngFor="let job of jobs" [value]="job.id">{{ job.title }}</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Department</label>
+        <select class="form-select" formControlName="departmentId">
+          <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+        </select>
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="d-flex justify-content-end gap-2">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="button" class="btn btn-secondary" (click)="closePopup(false)">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>

@@ -2,7 +2,7 @@ import { routes } from './../../app.routes';
 import { StreamService } from './../../../services/stream.service';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from './../../../services/user.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UpdateUserRequest, User } from '../../../models/users';
@@ -10,6 +10,7 @@ import { DepartmentService } from '../../../services/department.service';
 import { JobService } from '../../../services/job.service';
 import { Department } from '../../../models/departments';
 import { Job } from '../../../models/jobs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-edit-user',
@@ -18,17 +19,20 @@ import { Job } from '../../../models/jobs';
   styleUrl: './edit-user.component.css'
 })
 export class EditUserComponent implements OnInit {
-
+  @Output() close = new EventEmitter<boolean>();
+  @Input() userId!: number;
   departments: Department[] = [];
   jobs: Job[] = [];
   updateUserRequest: UpdateUserRequest = {} as UpdateUserRequest;
   editedUserForm: FormGroup = {} as FormGroup;
   user: User = {} as User;
   photoUrl: string = "";
-  constructor(private router: Router, private departmentService: DepartmentService, private jobService: JobService, private streamService: StreamService, private userService: UserService, private activetedRouter: ActivatedRoute) { }
+  constructor(private router: Router, private departmentService: DepartmentService, private jobService: JobService, private streamService: StreamService, private userService: UserService, private activetedRouter: ActivatedRoute) {
+
+  }
   ngOnInit(): void {
-    var userId = Number(this.activetedRouter?.snapshot.paramMap.get('id')!);
-    this.userService.getUserById(userId).subscribe({
+    //var userId = Number(this.activetedRouter?.snapshot.paramMap.get('id')!);
+    this.userService.getUserById(this.userId).subscribe({
       next: (response) => {
         this.user = response.result;
         this.photoUrl = this.user.photoUrl;
@@ -94,8 +98,16 @@ export class EditUserComponent implements OnInit {
     this.updateUserRequest.dateOfBirth = new Date(this.editedUserForm.value.dateOfBirth)
     this.userService.updateUser(this.updateUserRequest).subscribe({
       next: (response) => {
-        console.log(response)
-        this.router.navigateByUrl("/home");
+        if (response.success) {
+          this.closePopup(false)
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: response.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
+        }
       },
       error: (err) => {
         console.error('Error registering user:', err);
@@ -104,5 +116,9 @@ export class EditUserComponent implements OnInit {
   }
   cancelUpdateUser() {
     this.router.navigateByUrl("/home");
+  }
+
+  closePopup(updated: boolean = false) {
+    this.close.emit(updated);
   }
 }

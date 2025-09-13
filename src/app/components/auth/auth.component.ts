@@ -5,6 +5,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../../services/user.service';
 import { tick } from '@angular/core/testing';
 import { AuthRequest } from '../../../models/users';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-auth',
@@ -30,12 +31,27 @@ export class AuthComponent {
     this.authRequest.password = this.loginUserForm.value.password;
     this.userService.loginUser(this.authRequest).subscribe({
       next: (response) => {
-        this.authService.setToken(response.result.accessToken)
-        this.authService.setUserId(response.result.userId)
-        this.router.navigateByUrl("/home");
+        if (response.success) {
+
+          this.authService.setToken(response.result.accessToken)
+          this.authService.setUserId(response.result.userId)
+          this.router.navigateByUrl("/home");
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: response.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
+        }
       },
       error: (error) => {
-        console.error('Login failed', error);
+        Swal.fire({
+          title: 'Error',
+          text: error.error.message,
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
       }
     });
   }

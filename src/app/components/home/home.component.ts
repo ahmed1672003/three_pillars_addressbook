@@ -9,13 +9,15 @@ import { Job, CreateJobRequest, UpdateJobRequest } from '../../../models/jobs';
 import { JobService } from '../../../services/job.service';
 import { UserService } from '../../../services/user.service';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, UntypedFormBuilder } from '@angular/forms';
 import { environment } from '../../../environments/environment';
 import { Router, RouterLink } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { EditUserComponent } from '../edit-user/edit-user.component';
 @Component({
   selector: 'app-home',
-  imports: [FooterComponent, NavBarComponent, CommonModule, FormsModule, RouterLink],
+  imports: [FooterComponent, NavBarComponent, CommonModule, FormsModule, RouterLink, EditUserComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -24,7 +26,26 @@ export class HomeComponent implements OnInit {
   jobs: Job[] = [];
   departments: Department[] = [];
   streamUrl: string = "";
+  isEditPopupOpen = false;
+  selectedUserId: number = 0;
 
+  openEditPopup(user: User) {
+    this.selectedUserId = user.id;
+    this.isEditPopupOpen = true;
+    console.log('Editing user:', user);
+  }
+
+  onEditClosed(updated: boolean) {
+    this.isEditPopupOpen = false;
+    this.selectedUserId = 0;
+    if (updated) {
+      this.loadUsers(); // لو عاوز تحدث الجدول بعد تعديل ناجح
+    }
+  }
+
+  closeEditPopup() {
+    this.isEditPopupOpen = false;
+  }
   currentPage = 1;
   pageSize = 10;
   totalUsers = 0;
@@ -46,8 +67,9 @@ export class HomeComponent implements OnInit {
     name: ''
   };
 
-  constructor(private authService: AuthService, private jobService: JobService, private departmentService: DepartmentService, private userService: UserService, private router: Router) {
+  constructor(private modalService: NgbModal, private authService: AuthService, private jobService: JobService, private departmentService: DepartmentService, private userService: UserService, private router: Router) {
     this.streamUrl = environment.streamUrl;
+    this.selectedUserId = 0;
   }
 
   ngOnInit(): void {
@@ -89,10 +111,16 @@ export class HomeComponent implements OnInit {
         next: (response) => {
           console.log('Job updated successfully:', response);
           this.loadJobs();
+          this.loadUsers();
           this.cancelJobForm();
         },
         error: (error) => {
-          console.error('Error updating job:', error);
+          Swal.fire({
+            title: 'Error',
+            text: error.error.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
         }
       });
     } else {
@@ -103,10 +131,16 @@ export class HomeComponent implements OnInit {
         next: (response) => {
           console.log('Job created successfully:', response);
           this.loadJobs();
+          this.loadUsers();
           this.cancelJobForm();
         },
         error: (error) => {
-          console.error('Error creating job:', error);
+          Swal.fire({
+            title: 'Error',
+            text: error.error.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
         }
       });
     }
@@ -141,6 +175,7 @@ export class HomeComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.loadJobs();
+          this.loadUsers();
         } else {
           Swal.fire({
             title: 'Error',
@@ -152,10 +187,10 @@ export class HomeComponent implements OnInit {
       },
       error: (error) => {
         Swal.fire({
-          title: 'خطأ!',
-          text: 'حدث خطأ أثناء حذف المستخدم.',
+          title: 'Error',
+          text: error.error.message,
           icon: 'error',
-          confirmButtonText: 'حسناً'
+          confirmButtonText: 'Ok'
         });
       }
     });
@@ -199,12 +234,29 @@ export class HomeComponent implements OnInit {
       };
       this.departmentService.updateDepartment(updateRequest).subscribe({
         next: (response) => {
-          console.log('Department updated successfully:', response);
-          this.loadDepartments();
-          this.cancelDepartmentForm();
+
+          if (response.success) {
+            console.log('Department updated successfully:', response);
+            this.loadDepartments();
+            this.loadUsers();
+            this.cancelDepartmentForm();
+          }
+          else {
+            Swal.fire({
+              title: 'Error',
+              text: response.message,
+              icon: 'error',
+              confirmButtonText: 'Ok'
+            });
+          }
         },
         error: (error) => {
-          console.error('Error updating department:', error);
+          Swal.fire({
+            title: 'Error',
+            text: error.error.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
         }
       });
     } else {
@@ -214,16 +266,30 @@ export class HomeComponent implements OnInit {
       this.departmentService.addDepartment(createRequest).subscribe({
         next: (response) => {
           console.log('Department created successfully:', response);
-          this.loadDepartments();
-          this.cancelDepartmentForm();
+          if (response.success) {
+            this.loadDepartments();
+            this.loadUsers();
+            this.cancelDepartmentForm();
+          } else {
+            Swal.fire({
+              title: 'Error',
+              text: response.message,
+              icon: 'error',
+              confirmButtonText: 'Ok'
+            });
+          }
         },
         error: (error) => {
-          console.error('Error creating department:', error);
+          Swal.fire({
+            title: 'Error',
+            text: error.error.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
         }
       });
     }
   }
-
 
   deleteDepartmentAlert(department: Department) {
     Swal.fire({
@@ -251,11 +317,27 @@ export class HomeComponent implements OnInit {
   deleteDepartment(department: Department): void {
     this.departmentService.deleteDepartmentById(department.id).subscribe({
       next: (response) => {
-        console.log('Department deleted successfully:', response);
-        this.loadDepartments();
+        if (response.success) {
+          console.log('Department deleted successfully:', response);
+          this.loadDepartments();
+          this.loadUsers();
+        }
+        else {
+          Swal.fire({
+            title: 'Error',
+            text: response.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
+        }
       },
       error: (error) => {
-        console.error('Error deleting department:', error);
+        Swal.fire({
+          title: 'Error',
+          text: error.error.message,
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
       }
     });
   }
@@ -267,7 +349,7 @@ export class HomeComponent implements OnInit {
     this.departmentForm = { name: '' };
   }
 
-  // Users operations
+
   loadUsers(page: number = this.currentPage): void {
     this.userService.getPaginatedUsers(page, this.pageSize).subscribe({
       next: (response) => {
@@ -304,7 +386,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  // Pagination methods
+
   onPageChange(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.loadUsers(page);
@@ -391,8 +473,48 @@ export class HomeComponent implements OnInit {
         this.loadUsers();
       },
       error: (error) => {
-        console.error('Error deleting user:', error);
+        Swal.fire({
+          title: 'Error',
+          text: error.error.message,
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
       }
     });
+  }
+
+  openEditUserPopup(userId: number) {
+    const modalRef = this.modalService.open(EditUserComponent, {
+      size: 'lg',
+      backdrop: 'static'
+    });
+    modalRef.componentInstance.userId = userId;
+  }
+
+  exportToExcel() {
+    this.userService.exportToExcel().subscribe({
+      next: (response) => {
+        if (response.success) {
+
+          var xlsxUrl = `${this.streamUrl}${response.result.url}`
+          window.open(xlsxUrl, '_blank');
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: response.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
+        }
+      },
+      error: (error) => {
+        Swal.fire({
+          title: 'Error',
+          text: error.error.message,
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
+      }
+    })
   }
 }

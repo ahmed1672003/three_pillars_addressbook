@@ -12,6 +12,7 @@ import { Job } from '../../../models/jobs';
 import { CommonModule, DatePipe, JsonPipe } from '@angular/common';
 import { StreamService } from '../../../services/stream.service';
 import { tick } from '@angular/core/testing';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-register',
@@ -89,15 +90,29 @@ export class RegisterComponent implements OnInit {
     this.registerUserRequest.departmentId = this.newUserForm.value.departmentId;
     this.registerUserRequest.photoUrl = this.photoUrl;
     this.registerUserRequest.dateOfBirth = new Date(this.newUserForm.value.dateOfBirth)
-    console.log(this.registerUserRequest);
     this.userService.registerUser(this.registerUserRequest).subscribe({
       next: (response) => {
-        this.authService.setToken(response.result.accessToken);
-        this.authService.setUserId(response.result.userId);
-        this.router.navigateByUrl("/home");
+        if (response.success) {
+
+          this.authService.setToken(response.result.accessToken);
+          this.authService.setUserId(response.result.userId);
+          this.router.navigateByUrl("/home");
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: response.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
+        }
       },
-      error: (err) => {
-        console.error('Error registering user:', err);
+      error: (error) => {
+        Swal.fire({
+          title: 'Error',
+          text: error.error.message,
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
       }
     });
   }

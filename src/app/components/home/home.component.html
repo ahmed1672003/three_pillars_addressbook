@@ -114,6 +114,9 @@
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Users ({{ totalUsers }} total)</h5>
           <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-success btn-sm text-gray" (click)="exportToExcel()">
+              export to excel
+            </button>
             <div class="d-flex align-items-center gap-2">
               <span class="text-muted small">Show:</span>
               <div class="dropdown">
@@ -176,7 +179,10 @@
                   <td>{{ user.age }}</td>
                   <td>{{ user.dateOfBirth | date:'short' }}</td>
                   <td>
-                    <button class="btn btn-outline-primary btn-sm" title="Edit" [routerLink]="['/edit-user',user.id]">
+                    <button class="btn btn-outline-primary btn-sm" title="Edit" (click)="openEditPopup(user)">
+                      <!--
+                      [routerLink]="['/edit-user',user.id]"
+                      -->
                       <i class="fas fa-edit"></i>
                     </button>
                     <span> &nbsp;</span>
@@ -266,4 +272,4 @@
   </div>
 </div>
 
-<app-footer></app-footer>
+<app-edit-user *ngIf="isEditPopupOpen" [userId]="selectedUserId" (close)="onEditClosed($event)"></app-edit-user>
