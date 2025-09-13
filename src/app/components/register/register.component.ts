@@ -1,3 +1,4 @@
+import { AppComponent } from './../../app.component';
 import { Router } from '@angular/router';
 import { AuthService } from './../../../services/auth.service';
 import { RegisterUserRequest } from './../../../models/users';
@@ -8,7 +9,7 @@ import { Department } from './../../../models/departments';
 import { UserService } from './../../../services/user.service';
 import { Component, OnInit } from '@angular/core';
 import { Job } from '../../../models/jobs';
-import { CommonModule, JsonPipe } from '@angular/common';
+import { CommonModule, DatePipe, JsonPipe } from '@angular/common';
 import { StreamService } from '../../../services/stream.service';
 import { tick } from '@angular/core/testing';
 
@@ -25,6 +26,9 @@ export class RegisterComponent implements OnInit {
   photoUrl: string = "";
   registerUserRequest: RegisterUserRequest = {} as RegisterUserRequest;
   constructor(private router: Router, private authService: AuthService, private streamService: StreamService, private userService: UserService, private departmentService: DepartmentService, private jobService: JobService) {
+    if (authService.isAuthenticated()) {
+      this.router.navigateByUrl("/home");
+    }
     this.newUserForm = new FormGroup({
       name: new FormControl(''),
       phone: new FormControl(''),
@@ -35,6 +39,7 @@ export class RegisterComponent implements OnInit {
       departmentId: new FormControl(''),
       address: new FormControl(''),
       photo: new FormControl(''),
+      dateOfBirth: new FormControl(''),
     });
   }
 
@@ -84,10 +89,12 @@ export class RegisterComponent implements OnInit {
     this.registerUserRequest.jobId = this.newUserForm.value.jobId;
     this.registerUserRequest.departmentId = this.newUserForm.value.departmentId;
     this.registerUserRequest.photoUrl = this.photoUrl;
+    this.registerUserRequest.dateOfBirth = new Date(this.newUserForm.value.dateOfBirth)
     console.log(this.registerUserRequest);
     this.userService.registerUser(this.registerUserRequest).subscribe({
       next: (response) => {
         this.authService.setToken(response.result.accessToken);
+        this.authService.setUserId(response.result.userId);
         this.router.navigateByUrl("/home");
       },
       error: (err) => {

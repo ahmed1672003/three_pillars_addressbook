@@ -22,4 +22,15 @@ export class AuthService {
   clearToken(): void {
     localStorage.removeItem('accessToken');
   }
+  setUserId(userId: number) {
+    localStorage.setItem('userId', userId.toString());
+  }
+  clearUserId(): void {
+    localStorage.removeItem('userId');
+  }
+  getUserId(): number | null {
+    const userId = localStorage.getItem('userId');
+    return userId ? Number(userId) : null;
+  }
+
 }

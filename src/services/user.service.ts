@@ -38,6 +38,11 @@ export class UserService {
       `${environment.apiUrl}/user?pageIndex=${pageIndex}&pageSize=${pageSize}`);
   }
 
+  getPaginatedUsers(pageIndex: number, pageSize: number): Observable<PagedResponseOf<User[]>> {
+    return this._httpClient.get<PagedResponseOf<User[]>>(
+      `${environment.apiUrl}/user?pageIndex=${pageIndex}&pageSize=${pageSize}`);
+  }
+
   exportToExcel(): Observable<ResponseOf<Stream>> {
     return this._httpClient.get<ResponseOf<Stream>>(`${environment.apiUrl}/user/xlsx`);
   }

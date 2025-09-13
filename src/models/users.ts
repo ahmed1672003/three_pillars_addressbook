@@ -34,6 +34,7 @@ export interface User {
   phone: string;
   dateOfBirth: Date;
   address: string;
+  age: number;
   job: Job;
   department: Department;
 }
@@ -47,4 +48,5 @@ export interface AuthResponse {
   accessToken: string;
   refreshToken: Date;
   expiredIn: number;
+  userId: number;
 }

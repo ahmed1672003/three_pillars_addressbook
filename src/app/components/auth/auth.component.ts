@@ -31,6 +31,7 @@ export class AuthComponent {
     this.userService.loginUser(this.authRequest).subscribe({
       next: (response) => {
         this.authService.setToken(response.result.accessToken)
+        this.authService.setUserId(response.result.userId)
         this.router.navigateByUrl("/home");
       },
       error: (error) => {

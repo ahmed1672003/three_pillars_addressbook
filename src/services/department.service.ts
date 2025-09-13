@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateDepartmentRequest, Department } from '../models/departments';
-import { PagedResponseOf, ResponseOf } from '../models/shared';
+import { PagedResponseOf, ResponseOf, Response } from '../models/shared';
 
 @Injectable({
   providedIn: 'root'
