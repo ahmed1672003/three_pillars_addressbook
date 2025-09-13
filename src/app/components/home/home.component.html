@@ -41,7 +41,7 @@
                 </button>
                 <span> &nbsp;</span>
 
-                <button class="btn btn-outline-danger" (click)="deleteJob(job)" title="Delete">
+                <button class="btn btn-outline-danger" (click)="deleteJobAlert(job)" title="Delete">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
@@ -93,7 +93,7 @@
                   <i class="fas fa-edit"></i>
                 </button>
                 <span> &nbsp;</span>
-                <button class="btn btn-outline-danger" (click)="deleteDepartment(department)" title="Delete">
+                <button class="btn btn-outline-danger" (click)="deleteDepartmentAlert(department)" title="Delete">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
@@ -176,11 +176,11 @@
                   <td>{{ user.age }}</td>
                   <td>{{ user.dateOfBirth | date:'short' }}</td>
                   <td>
-                    <button class="btn btn-outline-primary btn-sm" title="Edit">
+                    <button class="btn btn-outline-primary btn-sm" title="Edit" [routerLink]="['/edit-user',user.id]">
                       <i class="fas fa-edit"></i>
                     </button>
                     <span> &nbsp;</span>
-                    <button class="btn btn-outline-danger btn-sm" title="Delete" (click)="deleteUser(user)">
+                    <button class="btn btn-outline-danger btn-sm" title="Delete" (click)="deleteUserAlert(user)">
                       <i class="fas fa-trash"></i>
                     </button>
                   </td>

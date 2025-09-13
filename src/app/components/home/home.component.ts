@@ -11,11 +11,11 @@ import { UserService } from '../../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../../environments/environment';
-import { Router } from '@angular/router';
-
+import { Router, RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-home',
-  imports: [FooterComponent, NavBarComponent, CommonModule, FormsModule],
+  imports: [FooterComponent, NavBarComponent, CommonModule, FormsModule, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -112,19 +112,55 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  deleteJob(job: Job): void {
-    if (confirm(`Are you sure you want to delete the job "${job.title}"?`)) {
-      this.jobService.deleteDapartmentById(job.id).subscribe({
-        next: (response) => {
-          console.log('Job deleted successfully:', response);
-          this.loadJobs();
-        },
-        error: (error) => {
-          console.error('Error deleting job:', error);
-        }
-      });
-    }
+  deleteJobAlert(job: Job) {
+    Swal.fire({
+      title: "Are you sure?",
+      icon: "question",
+      iconHtml: "؟",
+      confirmButtonText: "yes",
+      cancelButtonText: "no",
+      showCancelButton: true,
+      showCloseButton: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteJob(job)
+      }
+      else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire({
+          title: 'Canceld',
+          text: 'job delete canceld',
+          icon: 'info',
+          confirmButtonText: 'Good'
+        });
+      }
+    })
   }
+
+  deleteJob(job: Job): void {
+    this.jobService.deleteJobById(job.id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadJobs();
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: response.message,
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
+        }
+      },
+      error: (error) => {
+        Swal.fire({
+          title: 'خطأ!',
+          text: 'حدث خطأ أثناء حذف المستخدم.',
+          icon: 'error',
+          confirmButtonText: 'حسناً'
+        });
+      }
+    });
+  }
+
 
   cancelJobForm(): void {
     this.showJobForm = false;
@@ -188,19 +224,42 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  deleteDepartment(department: Department): void {
-    if (confirm(`Are you sure you want to delete the department "${department.name}"?`)) {
-      this.departmentService.deleteDepartmentById(department.id).subscribe({
-        next: (response) => {
-          console.log('Department deleted successfully:', response);
-          this.loadDepartments();
-        },
-        error: (error) => {
-          console.error('Error deleting department:', error);
-        }
-      });
-    }
+
+  deleteDepartmentAlert(department: Department) {
+    Swal.fire({
+      title: "Are you sure?",
+      icon: "question",
+      iconHtml: "؟",
+      confirmButtonText: "yes",
+      cancelButtonText: "no",
+      showCancelButton: true,
+      showCloseButton: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteDepartment(department)
+      }
+      else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire({
+          title: 'Canceld',
+          text: 'department delete canceld',
+          icon: 'info',
+          confirmButtonText: 'Good'
+        });
+      }
+    })
   }
+  deleteDepartment(department: Department): void {
+    this.departmentService.deleteDepartmentById(department.id).subscribe({
+      next: (response) => {
+        console.log('Department deleted successfully:', response);
+        this.loadDepartments();
+      },
+      error: (error) => {
+        console.error('Error deleting department:', error);
+      }
+    });
+  }
+
 
   cancelDepartmentForm(): void {
     this.showDepartmentForm = false;
@@ -292,6 +351,30 @@ export class HomeComponent implements OnInit {
       pages.push(i);
     }
     return pages;
+  }
+
+  deleteUserAlert(user: User) {
+    Swal.fire({
+      title: "Are you sure?",
+      icon: "question",
+      iconHtml: "؟",
+      confirmButtonText: "yes",
+      cancelButtonText: "no",
+      showCancelButton: true,
+      showCloseButton: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteUser(user)
+      }
+      else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire({
+          title: 'Canceld',
+          text: 'job delete canceld',
+          icon: 'info',
+          confirmButtonText: 'Good'
+        });
+      }
+    })
   }
   deleteUser(user: User): void {
     this.userService.deleteUserById(user.id).subscribe({

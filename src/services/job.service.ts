@@ -21,7 +21,7 @@ export class JobService {
     return this._httpClient.put<ResponseOf<Job>>(`${environment.apiUrl}/job`, newJob);
   }
 
-  deleteDapartmentById(id: number): Observable<Response> {
+  deleteJobById(id: number): Observable<Response> {
     return this._httpClient.delete<Response>(`${environment.apiUrl}/job/${id}`);
   }
 
